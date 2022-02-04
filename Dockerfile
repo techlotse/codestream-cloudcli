@@ -2,10 +2,10 @@ FROM amazonlinux
 #
 # Identify the maintainer of an image
 LABEL maintainer="info@techlotse.io"
-LABEL version="0.0.1"
+LABEL version="0.0.2"
 
 # Set Packer Version 
-ENV PACKER_VER=1.6.2
+ENV PACKER_VER=1.7.10
 
 # Install Pre-Requisites
 RUN yum -y update && \
