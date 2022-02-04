@@ -3,13 +3,8 @@
 
 Codestream Container for Cloud Vendor CLI's
 
-
-Versions:
-
-  Packer: 1.7.10
-
-  AWS CLI: 2
-
-  Azure CLI: Still To Be Added
-
-  Oracle CLI: Still To Be Added
+## Versions:
+- **Packer**: 1.7.10
+- **AWS CLI**: 2
+- **Azure CLI**: _Still To Be Added_
+- **Oracle CLI**: _Still To Be Added_
