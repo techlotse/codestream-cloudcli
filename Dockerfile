@@ -5,7 +5,7 @@ LABEL maintainer="info@techlotse.io"
 LABEL version="0.0.2"
 
 # Set Packer Version 
-ENV PACKER_VER=1.7.10
+ENV PACKER_VER=1.8.2
 
 # Install Pre-Requisites
 RUN yum -y update && \
