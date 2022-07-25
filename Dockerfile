@@ -23,3 +23,7 @@ RUN pip3 install --upgrade pip && \
     pip3 install \
     awscli \
     && rm -rf /var/cache/apk/*
+
+RUN yum -y update && \
+    yum -y upgrade && \
+    yum clean all
