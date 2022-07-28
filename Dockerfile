@@ -10,7 +10,7 @@ ENV PACKER_VER=1.8.2
 # Install Pre-Requisites
 RUN yum -y update && \
     yum -y upgrade && \
-    yum install -y curl wget unzip git ca-certificates openssl jq python3 make ansible && \
+    yum install -y curl wget unzip git ca-certificates openssl jq python3 make && \
     yum clean all
 
 # Install Packer
@@ -23,6 +23,9 @@ RUN pip3 install --upgrade pip && \
     pip3 install \
     awscli \
     && rm -rf /var/cache/apk/*
+    
+# Install Ansible
+RUN python3 -m pip install ansible
 
 RUN yum -y update && \
     yum -y upgrade && \
