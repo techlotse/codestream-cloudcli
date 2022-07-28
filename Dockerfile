@@ -10,7 +10,7 @@ ENV PACKER_VER=1.8.2
 # Install Pre-Requisites
 RUN yum -y update && \
     yum -y upgrade && \
-    yum install -y curl wget unzip git ca-certificates openssl jq python3 make && \
+    yum install -y curl wget unzip git ca-certificates openssl jq python3 make ansible && \
     yum clean all
 
 # Install Packer
