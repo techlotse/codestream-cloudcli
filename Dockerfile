@@ -2,10 +2,10 @@ FROM amazonlinux
 #
 # Identify the maintainer of an image
 LABEL maintainer="info@techlotse.io"
-LABEL version="0.0.2"
+LABEL version="0.0.3"
 
 # Set Packer Version 
-ENV PACKER_VER=1.8.2
+ENV PACKER_VER=1.8.3
 
 # Install Pre-Requisites
 RUN yum -y update && \
@@ -18,16 +18,12 @@ RUN wget -q https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_
     mv -f packer /usr/local/bin/ 
 
 # Install AWS CLI
-RUN pip3 install --upgrade pip && \
-    pip3 install \
-    awscli 
+RUN python3 -m pip install awscli 
     
 # Install Ansible
 RUN python3 -m pip install ansible
 
 #Cleanups
-RUN yum -y update && \
-    yum -y upgrade && \
-    yum clean all && \
+RUN yum clean all && \
     rm -rf /var/cache/yum/* && \
     rm -rf /var/cache/apk/*
