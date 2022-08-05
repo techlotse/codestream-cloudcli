@@ -23,6 +23,9 @@ RUN python3 -m pip install awscli
 # Install Ansible
 RUN python3 -m pip install ansible
 
+# Install Azure CLI
+RUN python3 -m pip installazure-cli
+
 #Cleanups
 RUN yum clean all && \
     rm -rf /var/cache/yum/* && \
