@@ -10,4 +10,4 @@ Codestream Container for Cloud Vendor CLI's
 - **Oracle CLI**: _Still To Be Added_
 - **Ansible**: 2.15.0
 
-## Updated images - 2022.12.19
+## Updated images - 2023.01.13
