@@ -9,5 +9,6 @@ Codestream Container for Cloud Vendor CLI's
 - **Azure CLI**: 2.41.0
 - **Oracle CLI**: _Still To Be Added_
 - **Ansible**: 2.15.0
+- **Terraform CLI**: 1.3.7
 
-## Updated images - 2023.01.13
+## Updated images - 2023.01.19
