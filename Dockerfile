@@ -2,7 +2,7 @@ FROM amazonlinux
 #
 # Identify the maintainer of an image
 LABEL maintainer="info@techlotse.io"
-LABEL version="0.0.3"
+LABEL version="0.0.4"
 
 # Set Packer Version 
 ENV PACKER_VER=1.8.3
@@ -25,6 +25,11 @@ RUN python3 -m pip install ansible
 
 # Install Azure CLI
 RUN python3 -m pip install azure-cli
+
+# Install Terraform
+RUN yum install -y yum-utils
+RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+RUN yum -y install terraform
 
 #Cleanups
 RUN yum clean all && \
