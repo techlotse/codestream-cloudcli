@@ -11,4 +11,4 @@ Codestream Container for Cloud Vendor CLI's
 - **Ansible**: 2.15.0
 - **Terraform CLI**: 1.3.7
 
-## Updated images - 2023.01.19
+## Updated images - 2023.02.06
