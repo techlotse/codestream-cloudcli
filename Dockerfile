@@ -8,9 +8,10 @@ LABEL version="0.0.5"
 ENV PACKER_VER=1.8.5
 
 # Install Pre-Requisites
+RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo 
 RUN yum -y update && \
     yum -y upgrade && \
-    yum install -y curl wget unzip git ca-certificates openssl jq python3 make
+    yum install -y curl wget unzip git ca-certificates openssl jq python3 make yum-utils
 
 # Install Packer
 RUN wget -q https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip && \
@@ -19,18 +20,16 @@ RUN wget -q https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_
     rm packer_${PACKER_VER}_linux_amd64.zip
 
 # Install AWS CLI
-RUN python3 -m pip install awscli 
+RUN python3 -m pip install awscli ansible azure-cli
     
 # Install Ansible
-RUN python3 -m pip install ansible
+#RUN python3 -m pip install ansible
 
 # Install Azure CLI
-RUN python3 -m pip install azure-cli
+#RUN python3 -m pip install azure-cli
 
 # Install Terraform
-RUN yum install -y yum-utils
-RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-RUN yum -y install terraform
+#RUN yum -y install terraform
 
 #Cleanups
 RUN yum clean all && \
