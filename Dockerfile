@@ -8,10 +8,13 @@ LABEL version="0.0.5"
 ENV PACKER_VER=1.8.5
 
 # Install Pre-Requisites
-RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo 
+ 
 RUN yum -y update && \
     yum -y upgrade && \
     yum install -y curl wget unzip git ca-certificates openssl jq python3 make yum-utils
+RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo && \
+    yum -y update && \
+    yum -y upgrade
 
 # Install Packer
 RUN wget -q https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip && \
