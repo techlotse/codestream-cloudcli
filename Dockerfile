@@ -5,7 +5,7 @@ LABEL maintainer="info@techlotse.io"
 LABEL version="0.0.5"
 
 # Set Packer Version 
-ENV PACKER_VER=1.8.5
+ENV PACKER_VER=1.9.1
 
 # Install Pre-Requisites
  
