@@ -3,10 +3,10 @@
 
 ## Tool Versions
 
-- AWS CLI version: [AWS_CLI_VERSION]
-- Packer version: [PACKER_VERSION]
-- Ansible version: [ANSIBLE_VERSION]
-- Azure CLI version: [AZURE_CLI_VERSION]
+- AWS CLI version: 2.15.17
+- Packer version: Packer v1.10.1
+- Ansible version: [core
+- Azure CLI version: 
 
 ## Description
 
