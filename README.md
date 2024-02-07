@@ -2,7 +2,7 @@
 # CodeStream-CloudCLI
 ## Docker Image Version
 
-- Docker image version: techlotse/codestream-cloudcli@sha256:1b66807d530d9c90f53ed58bddc66bf61b9ad2f991399cd39288ad3d0268aaba
+- Docker image version: techlotse/codestream-cloudcli@sha256:b4aa8adf084acd72bde68cefa4698574fea84b14a03964fc5d24b21b7f30ad14
 
 ## Tool Versions
 
