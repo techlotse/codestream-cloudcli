@@ -12,19 +12,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get the current date
-        id: current_date
-        run: echo "::set-output name=date::$(date +'%Y%m%d')"          
-      
+
       - name: Get current tool versions from README
         id: get_current_versions
         run: |
-          export CURRENT_AWS_CLI_VERSION=$(grep -oP 'AWS CLI version: \K.*' README.md)
-          export CURRENT_PACKER_VERSION=$(grep -oP 'Packer version: \K.*' README.md)
-          export CURRENT_ANSIBLE_VERSION=$(grep -oP 'Ansible version: \K.*' README.md)
-          export CURRENT_AZURE_CLI_VERSION=$(grep -oP 'Azure CLI version: \K.*' README.md)
-          export CURRENT_TERRAFORM_VERSION=$(grep -oP 'Terraform version: \K.*' README.md)
-          export CURRENT_DOCKER_IMAGE_VERSION=$(grep -oP 'Docker image version: \K.*' README.md)
+          export CURRENT_AWS_CLI_VERSION=$(grep -oP 'AWS CLI version: \K.*' README.md | head -n1)
+          export CURRENT_PACKER_VERSION=$(grep -oP 'Packer version: \K.*' README.md | head -n1)
+          export CURRENT_ANSIBLE_VERSION=$(grep -oP 'Ansible version: \K.*' README.md | head -n1 || echo "N/A")
+          export CURRENT_AZURE_CLI_VERSION=$(grep -oP 'Azure CLI version: \K.*' README.md | head -n1 || echo "N/A")
+          export CURRENT_TERRAFORM_VERSION=$(grep -oP 'Terraform version: \K.*' README.md | head -n1)
+          export CURRENT_DOCKER_IMAGE_VERSION=$(grep -oP 'Docker image version: \K.*' README.md | head -n1)
 
       - name: Get container versions
         id: get_versions
@@ -32,9 +29,9 @@ jobs:
           AWS_CLI_VERSION=$(docker run techlotse/codestream-cloudcli:latest aws --version | cut -d/ -f2 | cut -d " " -f1)
           PACKER_VERSION=$(docker run techlotse/codestream-cloudcli:latest packer --version)
           ANSIBLE_VERSION=$(docker run techlotse/codestream-cloudcli:latest ansible --version | grep -oP "(?<=ansible\s)[0-9]+\.[0-9]+\.[0-9]+" || echo "N/A")
-          AZURE_CLI_VERSION=$(docker run techlotse/codestream-cloudcli:latest az --version | grep 'azure-cli' | cut -d " " -f2)
+          AZURE_CLI_VERSION=$(docker run techlotse/codestream-cloudcli:latest az --version | grep 'azure-cli' | cut -d " " -f2 || echo "N/A")
           TERRAFORM_VERSION=$(docker run techlotse/codestream-cloudcli:latest terraform version | head -n1 | awk '{print $2}' | cut -d"v" -f2)
-          DOCKER_IMAGE_VERSION=${{ steps.current_date.outputs.date }}
+          DOCKER_IMAGE_VERSION=$(docker inspect --format='{{index .RepoDigests 0}}' techlotse/codestream-cloudcli:latest)
           echo "::set-output name=AWS_CLI_VERSION::$AWS_CLI_VERSION"
           echo "::set-output name=PACKER_VERSION::$PACKER_VERSION"
           echo "::set-output name=ANSIBLE_VERSION::$ANSIBLE_VERSION"
@@ -45,21 +42,24 @@ jobs:
       - name: Compare with current README
         id: compare_versions
         run: |
-          sed -i "s|AWS CLI version: ${{ steps.get_current_versions.outputs.CURRENT_AWS_CLI_VERSION }}|AWS CLI version: ${{ steps.get_versions.outputs.AWS_CLI_VERSION }}|" README.md
-          sed -i "s|Packer version: ${{ steps.get_current_versions.outputs.CURRENT_PACKER_VERSION }}|Packer version: ${{ steps.get_versions.outputs.PACKER_VERSION }}|" README.md
-          sed -i "s|Ansible version: ${{ steps.get_current_versions.outputs.CURRENT_ANSIBLE_VERSION }}|Ansible version: ${{ steps.get_versions.outputs.ANSIBLE_VERSION }}|" README.md
-          sed -i "s|Azure CLI version: ${{ steps.get_current_versions.outputs.CURRENT_AZURE_CLI_VERSION }}|Azure CLI version: ${{ steps.get_versions.outputs.AZURE_CLI_VERSION }}|" README.md
-          sed -i "s|Terraform version: ${{ steps.get_current_versions.outputs.CURRENT_TERRAFORM_VERSION }}|Terraform version: ${{ steps.get_versions.outputs.TERRAFORM_VERSION }}|" README.md
+          sed -i "s|AWS CLI version: ${CURRENT_AWS_CLI_VERSION}|AWS CLI version: ${{ steps.get_versions.outputs.AWS_CLI_VERSION }}|" README.md
+          sed -i "s|Packer version: ${CURRENT_PACKER_VERSION}|Packer version: ${{ steps.get_versions.outputs.PACKER_VERSION }}|" README.md
+          sed -i "s|Ansible version: ${CURRENT_ANSIBLE_VERSION}|Ansible version: ${{ steps.get_versions.outputs.ANSIBLE_VERSION }}|" README.md
+          sed -i "s|Azure CLI version: ${CURRENT_AZURE_CLI_VERSION}|Azure CLI version: ${{ steps.get_versions.outputs.AZURE_CLI_VERSION }}|" README.md
+          sed -i "s|Terraform version: ${CURRENT_TERRAFORM_VERSION}|Terraform version: ${{ steps.get_versions.outputs.TERRAFORM_VERSION }}|" README.md
+          sed -i "s|Docker image version: ${CURRENT_DOCKER_IMAGE_VERSION}|Docker image version: ${{ steps.get_versions.outputs.DOCKER_IMAGE_VERSION }}|" README.md
 
       - name: Prepend changelog
         run: |
-          echo "Container Version: techlotse/codestream-cloudcli:${{ steps.current_date.outputs.date }}" > changelog.txt
-          echo "Tools Updated:" >> changelog.txt
-          echo "AWS CLI: from ${{ steps.get_current_versions.outputs.CURRENT_AWS_CLI_VERSION }} to ${{ steps.get_versions.outputs.AWS_CLI_VERSION }}" >> changelog.txt
-          echo "Packer: from ${{ steps.get_current_versions.outputs.CURRENT_PACKER_VERSION }} to ${{ steps.get_versions.outputs.PACKER_VERSION }}" >> changelog.txt
-          echo "Ansible: from ${{ steps.get_current_versions.outputs.CURRENT_ANSIBLE_VERSION }} to ${{ steps.get_versions.outputs.ANSIBLE_VERSION }}" >> changelog.txt
-          echo "Azure CLI: from ${{ steps.get_current_versions.outputs.CURRENT_AZURE_CLI_VERSION }} to ${{ steps.get_versions.outputs.AZURE_CLI_VERSION }}" >> changelog.txt
-          echo "Terraform: from ${{ steps.get_current_versions.outputs.CURRENT_TERRAFORM_VERSION }} to ${{ steps.get_versions.outputs.TERRAFORM_VERSION }}" >> changelog.txt
+          echo "Container Version: techlotse/codestream-cloudcli:${{ steps.get_versions.outputs.date }}" > changelog_temp.txt
+          echo "Tools Updated:" >> changelog_temp.txt
+          echo "AWS CLI: from ${CURRENT_AWS_CLI_VERSION} to ${{ steps.get_versions.outputs.AWS_CLI_VERSION }}" >> changelog_temp.txt
+          echo "Packer: from ${CURRENT_PACKER_VERSION} to ${{ steps.get_versions.outputs.PACKER_VERSION }}" >> changelog_temp.txt
+          echo "Ansible: from ${CURRENT_ANSIBLE_VERSION} to ${{ steps.get_versions.outputs.ANSIBLE_VERSION }}" >> changelog_temp.txt
+          echo "Azure CLI: from ${CURRENT_AZURE_CLI_VERSION} to ${{ steps.get_versions.outputs.AZURE_CLI_VERSION }}" >> changelog_temp.txt
+          echo "Terraform: from ${CURRENT_TERRAFORM_VERSION} to ${{ steps.get_versions.outputs.TERRAFORM_VERSION }}" >> changelog_temp.txt
+          cat changelog.txt >> changelog_temp.txt
+          mv changelog_temp.txt changelog.txt
 
       - name: Update README and commit changes
         run: |
