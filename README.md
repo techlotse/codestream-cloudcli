@@ -6,11 +6,11 @@
 
 ## Tool Versions
 
-- AWS CLI version: 2.15.172.15.17
-- Packer version: Packer v1.10.1Packer v1.10.1
-- Ansible version: N/AN/A
+- AWS CLI version: 2.15.172.15.172.15.17
+- Packer version: Packer v1.10.1Packer v1.10.1Packer v1.10.1
+- Ansible version: N/AN/AN/A
 - Azure CLI version: 
-- Terraform version: 1.7.21.7.2
+- Terraform version: 1.7.21.7.21.7.2
 
 ## Description
 
