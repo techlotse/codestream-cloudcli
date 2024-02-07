@@ -2,19 +2,19 @@ FROM amazonlinux
 #
 # Identify the maintainer of an image
 LABEL maintainer="info@techlotse.io"
-LABEL version="0.0.5"
+LABEL version="0.1.0"
 
 # Set Packer Version 
-ENV PACKER_VER=1.9.1
+ENV PACKER_VER=1.10.0
 
 # Install Pre-Requisites
  
-RUN yum -y update && \
-    yum -y upgrade && \
-    yum install -y curl wget unzip git ca-certificates openssl jq python3 make yum-utils
-RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo && \
-    yum -y update && \
-    yum -y upgrade
+RUN dnf -y update && \
+    dnf -y upgrade && \
+    dnf install -y curl wget unzip git ca-certificates openssl jq python3 make dnf-utils
+RUN dnf-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo && \
+    dnf -y update && \
+    dnf -y upgrade
 
 # Install Packer
 RUN wget -q https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip && \
@@ -32,9 +32,9 @@ RUN python3 -m pip install awscli ansible azure-cli
 #RUN python3 -m pip install azure-cli
 
 # Install Terraform
-#RUN yum -y install terraform
+#RUN dnf -y install terraform
 
 #Cleanups
-RUN yum clean all && \
-    rm -rf /var/cache/yum/* && \
+RUN dnf clean all && \
+    rm -rf /var/cache/dnf/* && \
     rm -rf /var/cache/apk/*
