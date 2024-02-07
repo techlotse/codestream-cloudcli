@@ -1,20 +1,19 @@
 [![Publish Docker image](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml)   [![Documentation](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml)
+
 # CodeStream-CloudCLI
-[![Publish Docker image](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml)   [![Documentation](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml)  
-# CodeStream-CloudCLI
+
 ## Docker Image Version
 
-- Docker image version: techlotse/codestream-cloudcli@sha256:166676eeab978eea1bab06f5761b5e8130537610c7bd53b3d5f8b06e6d1cdc58techlotse/codestream-cloudcli@sha256:b4aa8adf084acd72bde68cefa4698574fea84b14a03964fc5d24b21b7f30ad14
+- Docker image version: techlotse/codestream-cloudcli@sha256:166676eeab978eea1bab06f5761b5e8130537610c7bd53b3d5f8b06e6d1cdc58techlotse
 
 ## Tool Versions
 
-- AWS CLI version: 2.15.172.15.17
-- Packer version: Packer v1.10.1Packer v1.10.1
-- Ansible version: N/AN/A
-- Azure CLI version: 
-- Terraform version: 1.7.21.7.2
+- AWS CLI version:
+- Packer version:
+- Ansible version:
+- Azure CLI version:
+- Terraform version:
 
 ## Description
 
 This repository contains the Dockerfile and associated scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools.## Description
-This repository contains the Dockerfile and associated scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools.
