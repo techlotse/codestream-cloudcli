@@ -5,10 +5,3 @@ Packer: from  to Packer v1.10.1
 Ansible: from  to N/A
 Azure CLI: from  to 
 Terraform: from  to 1.7.2
-Container Version: techlotse/codestream-cloudcli:20240207
-Tools Updated:
-AWS CLI: from  to 2.15.17
-Packer: from  to Packer v1.10.1
-Ansible: from  to N/A
-Azure CLI: from  to 
-Terraform: from  to 1.7.2
