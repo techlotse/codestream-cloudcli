@@ -1,4 +1,4 @@
-[![Publish Docker image](https://github.com/techlotse/codestream-cloudcli/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/docker-publish.yml)
+[![Publish Docker image](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml)   [![Documentation](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml)  
 # CodeStream-CloudCLI
 ## Docker Image Version
 
