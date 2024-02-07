@@ -1,40 +1,48 @@
-FROM amazonlinux
-#
-# Identify the maintainer of an image
+# Start with Amazon Linux 2023 as the base image
+FROM amazonlinux:2023
+
+# Metadata as key/value label pairs
 LABEL maintainer="info@techlotse.io"
 LABEL version="0.1.0"
 
-# Set Packer Version 
-ENV PACKER_VER=1.10.0
+# Set environment variables for tool versions, defaulting to latest
+# For specific versions, you can pass --build-arg PACKER_VER=<version> during docker build
+ARG PACKER_VER=latest
 
-# Install Pre-Requisites
- 
+# Install system updates and essential tools
 RUN dnf -y update && \
-    dnf -y upgrade && \
-    dnf install -y curl wget unzip git ca-certificates openssl jq python3 make dnf-utils
-RUN dnf-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo && \
-    dnf -y update && \
-    dnf -y upgrade
+    dnf -y install --allowerasing curl wget unzip git ca-certificates openssl jq python3 python3-pip make dnf-plugins-core && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf/*
 
-# Install Packer
-RUN wget -q https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip && \
-    unzip packer_${PACKER_VER}_linux_amd64.zip && \
-    mv -f packer /usr/local/bin/ && \
-    rm packer_${PACKER_VER}_linux_amd64.zip
+# Add HashiCorp's official repository and install Packer
+# Note: If PACKER_VER is set to 'latest', ensure to handle version resolution appropriately
+RUN dnf config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo && \
+    if [ "$PACKER_VER" = "latest" ]; then \
+        dnf -y install --allowerasing packer; \
+    else \
+        dnf -y install --allowerasing "packer-${PACKER_VER}"; \
+    fi
 
-# Install AWS CLI
-RUN python3 -m pip install awscli ansible azure-cli
-    
-# Install Ansible
-#RUN python3 -m pip install ansible
+# Install AWS CLI version 2
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -f awscliv2.zip && \
+    rm -rf aws
 
-# Install Azure CLI
-#RUN python3 -m pip install azure-cli
+# Install AWS CLI, Ansible, and Azure CLI without cache to save space
+RUN python3 -m pip install --no-cache-dir ansible azure-cli
 
 # Install Terraform
-#RUN dnf -y install terraform
+RUN dnf -y install terraform
 
-#Cleanups
+# Cleanup to reduce image size
 RUN dnf clean all && \
-    rm -rf /var/cache/dnf/* && \
-    rm -rf /var/cache/apk/*
+    rm -rf /var/cache/dnf/*
+
+# Set the default working directory (optional)
+WORKDIR /data
+
+# Default command or entry point (optional)
+CMD ["/bin/bash"]

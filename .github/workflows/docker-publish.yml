@@ -1,19 +1,18 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+name: Publish Docker image and Update README
 
-name: Publish Docker image
 on:
   push:
     branches:
       - latest
       - test
+  schedule:
+    - cron: '0 1 * * 0' # Runs at 01:00 UTC every Sunday
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to Docker Hub
+  build_and_push:
+    name: Build and push Docker image
     runs-on: ubuntu-latest
+    
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -24,16 +23,44 @@ jobs:
           username: ${{ secrets.ORG_DOCKERHUB_USER }}
           password: ${{ secrets.ORG_DOCKERHUB_KEY }}
       
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: techlotse/codestream-cloudcli
+      - name: Build Docker image
+        run: docker build . --tag my-image
       
-      - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with:
-          context: ./
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Push Docker image
+        run: |
+          docker tag my-image techlotse/codestream-cloudcli:latest
+          docker push techlotse/codestream-cloudcli:latest
+
+  update_readme:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Fetch tool versions
+        id: tool_versions
+        run: |
+          AWS_CLI_VERSION=$(docker run techlotse/codestream-cloudcli:latest aws --version | cut -d/ -f2 | cut -d " " -f1)
+          PACKER_VERSION=$(docker run techlotse/codestream-cloudcli:latest packer --version)
+          ANSIBLE_VERSION=$(docker run techlotse/codestream-cloudcli:latest ansible --version | head -n1 | cut -d " " -f2)
+          AZURE_CLI_VERSION=$(docker run techlotse/codestream-cloudcli:latest az --version | grep 'azure-cli' | cut -d " " -f2)
+          TERRAFORM_VERSION=$(docker run techlotse/codestream-cloudcli:latest terraform version | head -n1 | awk '{print $2}' | cut -d"v" -f2)
+          echo "::set-output name=AWS_CLI_VERSION::$AWS_CLI_VERSION"
+          echo "::set-output name=PACKER_VERSION::$PACKER_VERSION"
+          echo "::set-output name=ANSIBLE_VERSION::$ANSIBLE_VERSION"
+          echo "::set-output name=AZURE_CLI_VERSION::$AZURE_CLI_VERSION"
+          echo "::set-output name=TERRAFORM_VERSION::$TERRAFORM_VERSION"
+
+      - name: Update README
+        run: |
+          sed -i "s/AWS CLI version: .*/AWS CLI version: ${{ steps.tool_versions.outputs.AWS_CLI_VERSION }}/" README.md
+          sed -i "s/Packer version: .*/Packer version: ${{ steps.tool_versions.outputs.PACKER_VERSION }}/" README.md
+          sed -i "s/Ansible version: .*/Ansible version: ${{ steps.tool_versions.outputs.ANSIBLE_VERSION }}/" README.md
+          sed -i "s/Azure CLI version: .*/Azure CLI version: ${{ steps.tool_versions.outputs.AZURE_CLI_VERSION }}/" README.md
+          sed -i "s/Terraform version: .*/Terraform version: ${{ steps.tool_versions.outputs.TERRAFORM_VERSION }}/" README.md
+          git config --global user.email "info@techlotse.io"
+          git config --global user.name "GitHub Actions"
+          git add README.md
+          git commit -m "Updated README with latest tool versions" || exit 0 # Exit gracefully if no changes
+          git push

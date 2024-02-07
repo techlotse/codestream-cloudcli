@@ -1,14 +1,14 @@
 [![Publish Docker image](https://github.com/techlotse/codestream-cloudcli/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/docker-publish.yml)
 # CodeStream-CloudCLI
 
-Codestream Container for Cloud Vendor CLI's
+## Tool Versions
 
-## Versions:
-- **Packer**: 1.10.0
-- **AWS CLI**: 2.2.0
-- **Azure CLI**: 2.57.0
-- **Oracle CLI**: _Still To Be Added_
-- **Ansible**: 2.2.0
-- **Terraform CLI**: 1.7.2
+- AWS CLI version: [AWS_CLI_VERSION]
+- Packer version: [PACKER_VERSION]
+- Ansible version: [ANSIBLE_VERSION]
+- Azure CLI version: [AZURE_CLI_VERSION]
 
-## Updated images - 2024.02.07
+## Description
+
+This repository contains the Dockerfile and associated scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools.
+
