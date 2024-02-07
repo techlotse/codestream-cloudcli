@@ -15,4 +15,3 @@
 ## Description
 
 This repository contains the Dockerfile and associated scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools.
-

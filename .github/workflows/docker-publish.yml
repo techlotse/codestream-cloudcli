@@ -46,6 +46,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
+      - name: Get the current date
+        id: current_date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+
       - name: Fetch tool versions
         id: tool_versions
         run: |
@@ -69,7 +73,7 @@ jobs:
           sed -i "s|Ansible version: .*|Ansible version: ${{ steps.tool_versions.outputs.ANSIBLE_VERSION }}|" README.md
           sed -i "s|Azure CLI version: .*|Azure CLI version: ${{ steps.tool_versions.outputs.AZURE_CLI_VERSION }}|" README.md
           sed -i "s|Terraform version: .*|Terraform version: ${{ steps.tool_versions.outputs.TERRAFORM_VERSION }}|" README.md
-          sed -i "s|Docker image version: .*|Docker image version: ${{ steps.tool_versions.outputs.DOCKER_IMAGE_VERSION }}|" README.md
+          sed -i "s|Docker image version: .*|Docker image version: ${{ steps.current_date.outputs.date }}|" README.md
           git config --global user.email "info@techlotse.io"
           git config --global user.name "GitHub Actions"
           git add README.md
