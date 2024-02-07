@@ -64,12 +64,12 @@ jobs:
 
       - name: Update README
         run: |
-          sed -i "s/AWS CLI version: .*/AWS CLI version: ${{ steps.tool_versions.outputs.AWS_CLI_VERSION }}/" README.md
-          sed -i "s/Packer version: .*/Packer version: ${{ steps.tool_versions.outputs.PACKER_VERSION }}/" README.md
-          sed -i "s/Ansible version: .*/Ansible version: ${{ steps.tool_versions.outputs.ANSIBLE_VERSION }}/" README.md
-          sed -i "s/Azure CLI version: .*/Azure CLI version: ${{ steps.tool_versions.outputs.AZURE_CLI_VERSION }}/" README.md
-          sed -i "s/Terraform version: .*/Terraform version: ${{ steps.tool_versions.outputs.TERRAFORM_VERSION }}/" README.md
-          sed -i "s/Docker image version: .*/Docker image version: ${{ steps.tool_versions.outputs.DOCKER_IMAGE_VERSION }}/" README.md
+          sed -i "s|AWS CLI version: .*|AWS CLI version: ${{ steps.tool_versions.outputs.AWS_CLI_VERSION }}|" README.md
+          sed -i "s|Packer version: .*|Packer version: ${{ steps.tool_versions.outputs.PACKER_VERSION }}|" README.md
+          sed -i "s|Ansible version: .*|Ansible version: ${{ steps.tool_versions.outputs.ANSIBLE_VERSION }}|" README.md
+          sed -i "s|Azure CLI version: .*|Azure CLI version: ${{ steps.tool_versions.outputs.AZURE_CLI_VERSION }}|" README.md
+          sed -i "s|Terraform version: .*|Terraform version: ${{ steps.tool_versions.outputs.TERRAFORM_VERSION }}|" README.md
+          sed -i "s|Docker image version: .*|Docker image version: ${{ steps.tool_versions.outputs.DOCKER_IMAGE_VERSION }}|" README.md
           git config --global user.email "info@techlotse.io"
           git config --global user.name "GitHub Actions"
           git add README.md
