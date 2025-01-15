@@ -3,7 +3,7 @@ FROM amazonlinux:2023
 
 # Metadata as key/value label pairs
 LABEL maintainer="info@techlotse.io"
-LABEL version="0.1.0"
+LABEL version="0.2.0"
 
 # Set environment variables for tool versions, defaulting to latest
 # For specific versions, you can pass --build-arg PACKER_VER=<version> during docker build
