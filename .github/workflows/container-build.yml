@@ -34,6 +34,8 @@ jobs:
         with:
           context: .
           push: true
+          provenance: mode=max
+          sbom: true
           tags: |
             techlotse/codestream-cloudcli:${{ steps.current_date.outputs.date }}
             techlotse/codestream-cloudcli:latest
