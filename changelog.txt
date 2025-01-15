@@ -2,6 +2,6 @@ Container Version: techlotse/codestream-cloudcli:
 Tools Updated:
 AWS CLI: from  to 2.22.35
 Packer: from  to Packer v1.11.2
-Ansible: from  to 2.9.23
+Ansible: from  to 
 Azure CLI: from  to 
-Terraform: from  to 1.8.4
+Terraform: from  to 1.10.4
