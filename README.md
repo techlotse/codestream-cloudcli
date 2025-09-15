@@ -8,7 +8,7 @@
 
 ## Tool Versions
 
-- AWS CLI version: 2.22.35
+- AWS CLI version: 2.30.1
 - Packer version: Packer v1.11.2
 - Ansible version: 
 - Azure CLI version: 
