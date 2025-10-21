@@ -4,15 +4,15 @@
 
 ## Docker Image Version
 
-- Docker image version: techlotse/codestream-cloudcli@sha256:22e15018d184df2f6f6a373c28140e6f06d5f21009dcd277d4292ba506436414
+- Docker image version: techlotse/codestream-cloudcli@sha256:f07bc703138ec3a86336864204431777905e58f985bf74122d91f5d149021a03
 
 ## Tool Versions
 
-- AWS CLI version: 2.30.1
+- AWS CLI version: 2.31.18
 - Packer version: Packer v1.14.2
 - Ansible version: 
 - Azure CLI version: 
-- Terraform version: 1.13.2
+- Terraform version: 1.13.4
 
 ## Description
 
