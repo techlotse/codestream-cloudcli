@@ -8,11 +8,11 @@
 
 ## Tool Versions
 
-- AWS CLI version: 2.31.18
-- Packer version: Packer v1.14.2
-- Ansible version: 
-- Azure CLI version: 
-- Terraform version: 1.13.4
+- AWS CLI version: 2.27.45
+- Packer version: Packer v1.14.3
+- Ansible version: 12.2.0
+- Azure CLI version: 2.80.0
+- Terraform version: 1.14.3
 
 ## Description
 
