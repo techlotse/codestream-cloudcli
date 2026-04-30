@@ -30,7 +30,7 @@ RUN apk add --no-cache aws-cli
 # Install Terraform from HashiCorp releases (download binary)
 RUN TERRAFORM_VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep tag_name | cut -d'"' -f4 | sed 's/v//') && \
     curl -fsSL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip && \
-    unzip terraform.zip && \
+    unzip -o -q terraform.zip && \
     mv terraform /usr/local/bin/ && \
     rm terraform.zip && \
     terraform version
@@ -38,7 +38,7 @@ RUN TERRAFORM_VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform
 # Install Packer from HashiCorp releases (download binary)
 RUN PACKER_VERSION=$(curl -s https://api.github.com/repos/hashicorp/packer/releases/latest | grep tag_name | cut -d'"' -f4 | sed 's/v//') && \
     curl -fsSL https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o packer.zip && \
-    unzip packer.zip && \
+    unzip -o -q packer.zip && \
     mv packer /usr/local/bin/ && \
     rm packer.zip && \
     packer version
