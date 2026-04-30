@@ -9,60 +9,148 @@ on:
 jobs:
   update_docs:
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Get current tool versions from README
-        id: get_current_versions
+      - name: Wait for image availability
         run: |
-          export CURRENT_AWS_CLI_VERSION=$(grep -oP 'AWS CLI version: \K.*' README.md | head -n1)
-          export CURRENT_PACKER_VERSION=$(grep -oP 'Packer version: \K.*' README.md | head -n1)
-          export CURRENT_ANSIBLE_VERSION=$(grep -oP 'Ansible version: \K.*' README.md | head -n1 || echo "")
-          export CURRENT_AZURE_CLI_VERSION=$(grep -oP 'Azure CLI version: \K.*' README.md | head -n1 || echo "")
-          export CURRENT_TERRAFORM_VERSION=$(grep -oP 'Terraform version: \K.*' README.md | head -n1)
-          export CURRENT_DOCKER_IMAGE_VERSION=$(grep -oP 'Docker image version: \K.*' README.md | head -n1)
+          for i in {1..30}; do
+            if docker pull techlotse/codestream-cloudcli:latest > /dev/null 2>&1; then
+              echo "Image pulled successfully"
+              exit 0
+            fi
+            echo "Attempt $i: Waiting for image availability..."
+            sleep 10
+          done
+          echo "Image not available after 5 minutes"
+          exit 1
 
       - name: Get container versions
         id: get_versions
         run: |
-          AWS_CLI_VERSION=$(docker run techlotse/codestream-cloudcli:latest aws --version | cut -d/ -f2 | cut -d " " -f1)
-          PACKER_VERSION=$(docker run techlotse/codestream-cloudcli:latest packer --version)
-          ANSIBLE_VERSION=$(docker run techlotse/codestream-cloudcli:latest ansible --version | grep -oP "(?<=ansible\s)[0-9]+\.[0-9]+\.[0-9]+" || echo "")
-          AZURE_CLI_VERSION=$(docker run techlotse/codestream-cloudcli:latest az --version | grep 'azure-cli' | cut -d " " -f2 || echo "")
-          TERRAFORM_VERSION=$(docker run techlotse/codestream-cloudcli:latest terraform version | head -n1 | awk '{print $2}' | cut -d"v" -f2)
+          echo "Extracting versions from container..."
+          AWS_CLI_VERSION=$(docker run --rm techlotse/codestream-cloudcli:latest aws --version 2>&1 | cut -d' ' -f1 | cut -d'/' -f2)
+          TERRAFORM_VERSION=$(docker run --rm techlotse/codestream-cloudcli:latest terraform version 2>&1 | grep Terraform | head -1 | cut -d' ' -f2)
+          PACKER_VERSION=$(docker run --rm techlotse/codestream-cloudcli:latest packer version 2>&1)
+          ANSIBLE_VERSION=$(docker run --rm techlotse/codestream-cloudcli:latest ansible --version 2>&1 | head -1 | awk '{print $2}')
+          AZURE_CLI_VERSION=$(docker run --rm techlotse/codestream-cloudcli:latest az version 2>&1 | grep '"azure-cli"' | cut -d':' -f2 | tr -d ' ",' || echo "unknown")
+          YQ_VERSION=$(docker run --rm techlotse/codestream-cloudcli:latest yq --version 2>&1 | awk '{print $3}')
+          JQ_VERSION=$(docker run --rm techlotse/codestream-cloudcli:latest jq --version 2>&1)
           DOCKER_IMAGE_VERSION=$(docker inspect --format='{{index .RepoDigests 0}}' techlotse/codestream-cloudcli:latest)
-          echo "::set-output name=AWS_CLI_VERSION::$AWS_CLI_VERSION"
-          echo "::set-output name=PACKER_VERSION::$PACKER_VERSION"
-          echo "::set-output name=ANSIBLE_VERSION::$ANSIBLE_VERSION"
-          echo "::set-output name=AZURE_CLI_VERSION::$AZURE_CLI_VERSION"
-          echo "::set-output name=TERRAFORM_VERSION::$TERRAFORM_VERSION"
-          echo "::set-output name=DOCKER_IMAGE_VERSION::$DOCKER_IMAGE_VERSION"
+          BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo "aws_cli_version=$AWS_CLI_VERSION" >> $GITHUB_OUTPUT
+          echo "terraform_version=$TERRAFORM_VERSION" >> $GITHUB_OUTPUT
+          echo "packer_version=$PACKER_VERSION" >> $GITHUB_OUTPUT
+          echo "ansible_version=$ANSIBLE_VERSION" >> $GITHUB_OUTPUT
+          echo "azure_cli_version=$AZURE_CLI_VERSION" >> $GITHUB_OUTPUT
+          echo "yq_version=$YQ_VERSION" >> $GITHUB_OUTPUT
+          echo "jq_version=$JQ_VERSION" >> $GITHUB_OUTPUT
+          echo "docker_image_version=$DOCKER_IMAGE_VERSION" >> $GITHUB_OUTPUT
+          echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
 
-      - name: Compare with current README
-        id: compare_versions
+      - name: Update README with latest versions
+        env:
+          AWS_CLI_VERSION: ${{ steps.get_versions.outputs.aws_cli_version }}
+          TERRAFORM_VERSION: ${{ steps.get_versions.outputs.terraform_version }}
+          PACKER_VERSION: ${{ steps.get_versions.outputs.packer_version }}
+          ANSIBLE_VERSION: ${{ steps.get_versions.outputs.ansible_version }}
+          AZURE_CLI_VERSION: ${{ steps.get_versions.outputs.azure_cli_version }}
+          YQ_VERSION: ${{ steps.get_versions.outputs.yq_version }}
+          JQ_VERSION: ${{ steps.get_versions.outputs.jq_version }}
+          DOCKER_IMAGE_VERSION: ${{ steps.get_versions.outputs.docker_image_version }}
+          BUILD_DATE: ${{ steps.get_versions.outputs.build_date }}
         run: |
-          sed -i "s|AWS CLI version:.*|AWS CLI version: ${{ steps.get_versions.outputs.AWS_CLI_VERSION }}|" README.md
-          sed -i "s|Packer version:.*|Packer version: ${{ steps.get_versions.outputs.PACKER_VERSION }}|" README.md
-          sed -i "s|Ansible version:.*|Ansible version: ${{ steps.get_versions.outputs.ANSIBLE_VERSION }}|" README.md
-          sed -i "s|Azure CLI version:.*|Azure CLI version: ${{ steps.get_versions.outputs.AZURE_CLI_VERSION }}|" README.md
-          sed -i "s|Terraform version:.*|Terraform version: ${{ steps.get_versions.outputs.TERRAFORM_VERSION }}|" README.md
-          sed -i "s|Docker image version:.*|Docker image version: ${{ steps.get_versions.outputs.DOCKER_IMAGE_VERSION }}|" README.md
+          cat > README.md << 'READMEEOF'
+          # CodeStream-CloudCLI
 
-      - name: Prepend changelog
+          A lightweight, security-focused Docker container with essential cloud and infrastructure CLI tools for automation pipelines and CI/CD workflows.
+
+          ## Docker Image
+
+          - Image: techlotse/codestream-cloudcli
+          - Latest Tag: latest or v<version> or YYYYMMDD
+          - Base Image: Alpine Linux 3.19 (lightweight & security-focused)
+          - Image Digest: $DOCKER_IMAGE_VERSION
+          - Last Updated: $BUILD_DATE
+
+          ## Installed Tools and Versions
+
+          | Tool | Version |
+          |------|---------|
+          | AWS CLI | $AWS_CLI_VERSION |
+          | Azure CLI | $AZURE_CLI_VERSION |
+          | Terraform | $TERRAFORM_VERSION |
+          | Packer | $PACKER_VERSION |
+          | Ansible | $ANSIBLE_VERSION |
+          | yq | $YQ_VERSION |
+          | jq | $JQ_VERSION |
+
+          ## Additional Included Tools
+
+          - curl, wget, unzip
+          - git
+          - Python 3 with pip
+          - sed, awk (GNU AWK)
+          - CA certificates & OpenSSL
+          - make
+          - bind-tools (dns utilities)
+
+          ## Usage
+
+          Basic usage:
+
+          ```bash
+          docker run -it techlotse/codestream-cloudcli:latest
+          ```
+
+          ## Versioning
+
+          - Semantic Versioning: Images are tagged with semantic versions
+          - Date Tags: Images are also tagged with build dates (YYYYMMDD format)
+          - Latest Tag: Always points to the most recent stable build
+          - Build Schedule: Weekly builds on Sunday at 6:00 AM UTC
+
+          ## Build and Push Schedule
+
+          This image is automatically built and pushed to Docker Hub:
+
+          - Schedule: Every Sunday at 6:00 AM UTC (7:00 AM CET)
+          - Trigger: Automated weekly schedule via GitHub Actions
+          - Registry: Docker Hub (techlotse/codestream-cloudcli)
+
+          ## Documentation Updates
+
+          The README is automatically updated after each successful container build with the latest tool versions. Documentation updates do not trigger new container builds, ensuring clean separation of concerns.
+
+          ## Description
+
+          This repository contains the Dockerfile and automation scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools.
+          READMEEOF
+
+      - name: Check for changes
+        id: check_changes
         run: |
-          echo "Container Version: techlotse/codestream-cloudcli:${{ steps.get_versions.outputs.date }}" > changelog.txt
-          echo "Tools Updated:" >> changelog.txt
-          echo "AWS CLI: from ${CURRENT_AWS_CLI_VERSION} to ${{ steps.get_versions.outputs.AWS_CLI_VERSION }}" >> changelog.txt
-          echo "Packer: from ${CURRENT_PACKER_VERSION} to ${{ steps.get_versions.outputs.PACKER_VERSION }}" >> changelog.txt
-          echo "Ansible: from ${CURRENT_ANSIBLE_VERSION} to ${{ steps.get_versions.outputs.ANSIBLE_VERSION }}" >> changelog.txt
-          echo "Azure CLI: from ${CURRENT_AZURE_CLI_VERSION} to ${{ steps.get_versions.outputs.AZURE_CLI_VERSION }}" >> changelog.txt
-          echo "Terraform: from ${CURRENT_TERRAFORM_VERSION} to ${{ steps.get_versions.outputs.TERRAFORM_VERSION }}" >> changelog.txt
+          if git diff --quiet README.md; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Update README and commit changes
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git config --global user.email "info@techlotse.io"
           git config --global user.name "GitHub Actions"
-          git add README.md changelog.txt
-          git commit -m "Updated documentation with latest tool versions" || exit 0 # Exit gracefully if no changes
+          git add README.md
+          git commit -m "docs: update tool versions from container build [skip ci]"
           git push
+
+      - name: Skip commit if no changes
+        if: steps.check_changes.outputs.has_changes == 'false'
+        run: |
+          echo "No version changes detected, skipping commit"

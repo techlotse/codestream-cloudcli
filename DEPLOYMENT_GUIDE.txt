@@ -1,0 +1,201 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║         CLOUDCLI DOCKER IMAGE - DEPLOYMENT GUIDE                            ║
+║                                                                              ║
+║  Version 0.3.0 | April 30, 2026                                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+WHAT WAS CHANGED
+════════════════════════════════════════════════════════════════════════════════
+
+✓ Dockerfile
+  • Base image: Amazon Linux 2023 → Alpine Linux 3.19
+  • Added missing tool: yq
+  • All 9 required CLI tools included
+  • Added version tracking file
+
+✓ VERSION (NEW)
+  • Semantic versioning: 0.3.0
+  • Used by build workflow for consistent tagging
+
+✓ README.md
+  • Complete rewrite with comprehensive documentation
+  • Auto-updated with current tool versions after each build
+  • Table format showing all tools and versions
+  • Usage examples and versioning strategy documented
+
+✓ .github/workflows/container-build.yml
+  • Changed from push-triggered → scheduled build
+  • Weekly schedule: Every Sunday at 6:00 AM UTC (cron: 0 6 * * 0)
+  • Manual trigger support via workflow_dispatch
+  • Three-tier tagging: semantic + date + latest
+  • SBOM and provenance data included
+
+✓ .github/workflows/update-docs.yml
+  • Improved version extraction from running container
+  • Auto-generates README after successful build
+  • Includes [skip ci] flag to prevent build loops
+  • Image availability wait loop (5 min timeout)
+  • Better error handling and change detection
+
+
+NEXT STEPS - HOW TO DEPLOY
+════════════════════════════════════════════════════════════════════════════════
+
+1. Review the changes
+   Review this guide and the modified files carefully
+
+2. Commit changes to repository
+   git add .
+   git commit -m "feat: modernize Docker image and CI/CD automation
+   
+   - Migrate base image from Amazon Linux 2023 to Alpine Linux 3.19
+   - Add yq CLI tool for YAML/JSON processing  
+   - Implement weekly build schedule (Sunday 6 AM UTC)
+   - Add semantic versioning with VERSION file
+   - Improve documentation automation with [skip ci] flag
+   - Update GitHub Actions workflows to latest versions"
+   
+   git push origin main
+
+3. First build (choose one):
+   Option A (recommended): Wait for next Sunday at 6:00 AM UTC
+   Option B: Manually trigger via GitHub Actions workflow_dispatch
+   
+4. Verify after first build
+   • Check GitHub Actions for successful workflow runs
+   • Verify new image on Docker Hub with tags:
+     - techlotse/codestream-cloudcli:v0.3.0
+     - techlotse/codestream-cloudcli:20260504 (date)
+     - techlotse/codestream-cloudcli:latest
+   • Verify README was auto-updated with version info
+
+
+BUILD PROCESS OVERVIEW
+════════════════════════════════════════════════════════════════════════════════
+
+Weekly Automated Build (Every Sunday 6:00 AM UTC):
+
+  1. GitHub Actions triggers container-build.yml
+  2. Build Docker image with Alpine Linux 3.19 base
+  3. Include all 9 CLI tools (AWS, Azure, Terraform, Packer, Ansible, yq, jq, etc)
+  4. Push to Docker Hub with three tags:
+     • Semantic: v0.3.0
+     • Date-based: 20260504
+     • Latest: latest
+  5. Generate SBOM and provenance data
+  
+  → On Success: Automatically trigger update-docs.yml
+  
+  6. Extract versions from running container
+  7. Generate/update README.md with current versions
+  8. Commit with [skip ci] flag (prevents new build)
+  9. Push back to repository
+
+
+VERSIONING EXPLAINED
+════════════════════════════════════════════════════════════════════════════════
+
+Three-tier tagging system provides maximum flexibility:
+
+  • v0.3.0 (Semantic) - Update VERSION file before major releases
+  • 20260504 (Date) - Automatically generated, helpful for tracking
+  • latest - Always points to most recent successful build
+
+Example:
+  docker pull techlotse/codestream-cloudcli:v0.3.0
+  docker pull techlotse/codestream-cloudcli:20260504
+  docker pull techlotse/codestream-cloudcli:latest
+
+
+NO BUILD LOOPS PROTECTION
+════════════════════════════════════════════════════════════════════════════════
+
+The automation is designed to prevent circular build triggers:
+
+  • Container build → triggers → documentation update
+  • Documentation update includes [skip ci] flag
+  • [skip ci] prevents triggering new container build
+  
+Result: Clean separation, no endless loops
+
+
+ALL REQUIRED TOOLS INCLUDED
+════════════════════════════════════════════════════════════════════════════════
+
+✓ AWS CLI         - Cloud infrastructure management
+✓ Azure CLI       - Microsoft Azure management
+✓ Terraform       - Infrastructure-as-Code
+✓ Packer          - Machine image creation
+✓ Ansible         - Configuration management
+✓ yq              - YAML/JSON querying (NEW)
+✓ jq              - JSON processing
+✓ sed             - Stream editor
+✓ awk             - Text processing
+
+Plus: git, curl, wget, python3, bash, openssl, ca-certificates, and more
+
+
+TESTING LOCALLY (OPTIONAL)
+════════════════════════════════════════════════════════════════════════════════
+
+Before pushing, you can test the Docker image locally:
+
+  docker build -t codestream-cloudcli:test .
+  docker run -it codestream-cloudcli:test
+  
+  # Inside container, verify tools:
+  aws --version
+  terraform --version
+  ansible --version
+  packer --version
+  az --version
+  yq --version
+  jq --version
+
+
+TROUBLESHOOTING
+════════════════════════════════════════════════════════════════════════════════
+
+If first build fails:
+  1. Check GitHub Actions logs for error details
+  2. Verify Docker Hub credentials are set
+  3. Check file permissions in repository
+  4. Retry via workflow_dispatch
+
+If README doesn't update:
+  1. Check update-docs.yml logs for version extraction errors
+  2. Verify image is available on Docker Hub
+  3. Check git push permissions
+
+If build loop occurs:
+  1. Verify [skip ci] flag is in commit message
+  2. Check workflow_run trigger configuration
+  3. Ensure update-docs.yml is condition-protected
+
+
+REFERENCE DOCUMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+See these files in the repository for more details:
+
+  • IMPLEMENTATION_SUMMARY.md - Complete technical details
+  • VERIFICATION_CHECKLIST.md - All requirements verification
+  • CHANGELOG_RECENT.md - Detailed changelog with benefits
+  • README.md - User-facing documentation (auto-updated)
+
+
+SUPPORT & MAINTENANCE
+════════════════════════════════════════════════════════════════════════════════
+
+Maintainer: TechLotse (info@techlotse.io)
+Repository: github.com/techlotse/codestream-cloudcli
+Registry: hub.docker.com/r/techlotse/codestream-cloudcli
+
+For issues or questions, refer to repository issues or contact maintainer.
+
+
+════════════════════════════════════════════════════════════════════════════════
+Status: ✓ READY FOR DEPLOYMENT
+Generated: April 30, 2026
+Version: 0.3.0
+════════════════════════════════════════════════════════════════════════════════

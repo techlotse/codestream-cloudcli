@@ -1,48 +1,62 @@
-# Start with Amazon Linux 2023 as the base image
-FROM amazonlinux:2023
+# Start with Alpine Linux 3.19 - lightweight and security-focused base image
+FROM alpine:3.19
 
 # Metadata as key/value label pairs
 LABEL maintainer="info@techlotse.io"
-LABEL version="0.2.1"
+LABEL description="CloudCLI - Container with essential cloud and infrastructure CLI tools"
 
-# Set environment variables for tool versions, defaulting to latest
-# For specific versions, you can pass --build-arg PACKER_VER=<version> during docker build
+# Build arguments for tool versions
 ARG PACKER_VER=latest
+ARG AWS_CLI_VER=latest
+ARG TERRAFORM_VER=latest
+ARG ANSIBLE_VER=latest
+ARG AZURE_CLI_VER=latest
 
 # Install system updates and essential tools
-RUN dnf -y update && \
-    dnf -y install --allowerasing curl wget unzip git ca-certificates openssl jq python3 python3-pip make dnf-plugins-core && \
-    dnf clean all && \
-    rm -rf /var/cache/dnf/*
-
-# Add HashiCorp's official repository and install Packer
-# Note: If PACKER_VER is set to 'latest', ensure to handle version resolution appropriately
-RUN dnf config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo && \
-    if [ "$PACKER_VER" = "latest" ]; then \
-        dnf -y install --allowerasing packer; \
-    else \
-        dnf -y install --allowerasing "packer-${PACKER_VER}"; \
-    fi
+RUN apk add --no-cache \
+    curl \
+    wget \
+    unzip \
+    git \
+    ca-certificates \
+    openssl \
+    python3 \
+    py3-pip \
+    make \
+    bash \
+    jq \
+    yq \
+    sed \
+    gawk \
+    bind-tools \
+    && rm -rf /var/cache/apk/*
 
 # Install AWS CLI version 2
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm -f awscliv2.zip && \
-    rm -rf aws
-
-# Install AWS CLI, Ansible, and Azure CLI without cache to save space
-RUN python3 -m pip install --no-cache-dir ansible azure-cli
+RUN apk add --no-cache aws-cli
 
 # Install Terraform
-RUN dnf -y install terraform
+RUN apk add --no-cache terraform
 
-# Cleanup to reduce image size
-RUN dnf clean all && \
-    rm -rf /var/cache/dnf/*
+# Install Packer
+RUN apk add --no-cache packer
 
-# Set the default working directory (optional)
+# Install Ansible and Azure CLI via pip without cache to save space
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
+    ansible \
+    azure-cli
+
+# Create a version file for reference
+RUN echo "CloudCLI Version Information:" > /etc/cloudcli-versions.txt && \
+    echo "AWS CLI: $(aws --version 2>&1 || echo 'not installed')" >> /etc/cloudcli-versions.txt && \
+    echo "Terraform: $(terraform version 2>&1 | head -1 || echo 'not installed')" >> /etc/cloudcli-versions.txt && \
+    echo "Packer: $(packer version 2>&1 || echo 'not installed')" >> /etc/cloudcli-versions.txt && \
+    echo "Ansible: $(ansible --version 2>&1 | head -1 || echo 'not installed')" >> /etc/cloudcli-versions.txt && \
+    echo "Azure CLI: $(az version 2>&1 | head -1 || echo 'not installed')" >> /etc/cloudcli-versions.txt && \
+    echo "yq: $(yq --version 2>&1 || echo 'not installed')" >> /etc/cloudcli-versions.txt && \
+    echo "jq: $(jq --version 2>&1 || echo 'not installed')" >> /etc/cloudcli-versions.txt
+
+# Set the default working directory
 WORKDIR /data
 
-# Default command or entry point (optional)
+# Default command or entry point
 CMD ["/bin/bash"]
