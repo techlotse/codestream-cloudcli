@@ -57,83 +57,75 @@ jobs:
           echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
 
       - name: Update README with latest versions
-        env:
-          AWS_CLI_VERSION: ${{ steps.get_versions.outputs.aws_cli_version }}
-          TERRAFORM_VERSION: ${{ steps.get_versions.outputs.terraform_version }}
-          PACKER_VERSION: ${{ steps.get_versions.outputs.packer_version }}
-          ANSIBLE_VERSION: ${{ steps.get_versions.outputs.ansible_version }}
-          AZURE_CLI_VERSION: ${{ steps.get_versions.outputs.azure_cli_version }}
-          YQ_VERSION: ${{ steps.get_versions.outputs.yq_version }}
-          JQ_VERSION: ${{ steps.get_versions.outputs.jq_version }}
-          DOCKER_IMAGE_VERSION: ${{ steps.get_versions.outputs.docker_image_version }}
-          BUILD_DATE: ${{ steps.get_versions.outputs.build_date }}
         run: |
-          cat > README.md << 'READMEEOF'
-          # CodeStream-CloudCLI
+          cat > README.md << EOF
+[![Publish Docker image](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/container-build.yml)   [![Documentation](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml/badge.svg)](https://github.com/techlotse/codestream-cloudcli/actions/workflows/update-docs.yml)
 
-          A lightweight, security-focused Docker container with essential cloud and infrastructure CLI tools for automation pipelines and CI/CD workflows.
+# CodeStream-CloudCLI
 
-          ## Docker Image
+A lightweight, security-focused Docker container with essential cloud and infrastructure CLI tools for automation pipelines and CI/CD workflows.
 
-          - Image: techlotse/codestream-cloudcli
-          - Latest Tag: latest or v<version> or YYYYMMDD
-          - Base Image: Alpine Linux 3.19 (lightweight & security-focused)
-          - Image Digest: $DOCKER_IMAGE_VERSION
-          - Last Updated: $BUILD_DATE
+## Docker Image
 
-          ## Installed Tools and Versions
+- **Image**: \`techlotse/codestream-cloudcli\`
+- **Latest Tag**: \`latest\` or \`v<version>\` or \`<YYYYMMDD>\`
+- **Base Image**: Alpine Linux 3.19 (lightweight & security-focused)
+- **Image Digest**: ${{ steps.get_versions.outputs.docker_image_version }}
+- **Last Updated**: ${{ steps.get_versions.outputs.build_date }}
 
-          | Tool | Version |
-          |------|---------|
-          | AWS CLI | $AWS_CLI_VERSION |
-          | Azure CLI | $AZURE_CLI_VERSION |
-          | Terraform | $TERRAFORM_VERSION |
-          | Packer | $PACKER_VERSION |
-          | Ansible | $ANSIBLE_VERSION |
-          | yq | $YQ_VERSION |
-          | jq | $JQ_VERSION |
+## Installed Tools and Versions
 
-          ## Additional Included Tools
+| Tool | Version |
+|------|---------|
+| AWS CLI | ${{ steps.get_versions.outputs.aws_cli_version }} |
+| Azure CLI | ${{ steps.get_versions.outputs.azure_cli_version }} |
+| Terraform | ${{ steps.get_versions.outputs.terraform_version }} |
+| Packer | ${{ steps.get_versions.outputs.packer_version }} |
+| Ansible | ${{ steps.get_versions.outputs.ansible_version }} |
+| yq | ${{ steps.get_versions.outputs.yq_version }} |
+| jq | ${{ steps.get_versions.outputs.jq_version }} |
 
-          - curl, wget, unzip
-          - git
-          - Python 3 with pip
-          - sed, awk (GNU AWK)
-          - CA certificates & OpenSSL
-          - make
-          - bind-tools (dns utilities)
+## Additional Included Tools
 
-          ## Usage
+- curl, wget, unzip
+- git
+- Python 3 with pip
+- sed, awk (GNU AWK)
+- CA certificates & OpenSSL
+- make
+- bind-tools (dns utilities)
 
-          Basic usage:
+## Usage
 
-          ```bash
-          docker run -it techlotse/codestream-cloudcli:latest
-          ```
+Basic usage:
 
-          ## Versioning
+\`\`\`bash
+docker run -it techlotse/codestream-cloudcli:latest
+\`\`\`
 
-          - Semantic Versioning: Images are tagged with semantic versions
-          - Date Tags: Images are also tagged with build dates (YYYYMMDD format)
-          - Latest Tag: Always points to the most recent stable build
-          - Build Schedule: Weekly builds on Sunday at 6:00 AM UTC
+## Versioning
 
-          ## Build and Push Schedule
+- **Semantic Versioning**: Images are tagged with semantic versions (v0.3.0, etc.)
+- **Date Tags**: Images are also tagged with build dates (YYYYMMDD format)
+- **Latest Tag**: Always points to the most recent stable build
+- **Build Schedule**: Weekly builds on Sunday at 6:00 AM UTC
 
-          This image is automatically built and pushed to Docker Hub:
+## Build and Push Schedule
 
-          - Schedule: Every Sunday at 6:00 AM UTC (7:00 AM CET)
-          - Trigger: Automated weekly schedule via GitHub Actions
-          - Registry: Docker Hub (techlotse/codestream-cloudcli)
+This image is automatically built and pushed to Docker Hub:
 
-          ## Documentation Updates
+- **Schedule**: Every Sunday at 6:00 AM UTC (7:00 AM CET)
+- **Trigger**: Automated weekly schedule via GitHub Actions
+- **Registry**: Docker Hub (techlotse/codestream-cloudcli)
 
-          The README is automatically updated after each successful container build with the latest tool versions. Documentation updates do not trigger new container builds, ensuring clean separation of concerns.
+## Documentation Updates
 
-          ## Description
+The README is automatically updated after each successful container build with the latest tool versions. Documentation updates do not trigger new container builds, ensuring a clean separation of concerns.
 
-          This repository contains the Dockerfile and automation scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools.
-          READMEEOF
+## Description
+
+This repository contains the Dockerfile and automation scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools. The container is optimized for use in automation pipelines, CI/CD systems, and infrastructure-as-code workflows.
+EOF
 
       - name: Check for changes
         id: check_changes

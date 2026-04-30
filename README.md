@@ -9,29 +9,31 @@ A lightweight, security-focused Docker container with essential cloud and infras
 - **Image**: `techlotse/codestream-cloudcli`
 - **Latest Tag**: `latest` or `v<version>` or `<YYYYMMDD>`
 - **Base Image**: Alpine Linux 3.19 (lightweight & security-focused)
-- **Last Updated**: Check GitHub Actions workflow logs
+- **Last Updated**: See badges above for latest build status
 
 ## Installed Tools and Versions
 
-| Tool | Purpose |
+| Tool | Version |
 |------|---------|
-| AWS CLI | Amazon Web Services command-line interface |
-| Azure CLI | Microsoft Azure command-line interface |
-| Terraform | Infrastructure-as-Code provisioning |
-| Packer | Machine image creation & management |
-| Ansible | Configuration management & automation |
-| yq | YAML/JSON query and manipulation |
-| jq | JSON processor and query tool |
+| AWS CLI | Check GitHub Actions for latest |
+| Azure CLI | Check GitHub Actions for latest |
+| Terraform | Check GitHub Actions for latest |
+| Packer | Check GitHub Actions for latest |
+| Ansible | Check GitHub Actions for latest |
+| yq | Check GitHub Actions for latest |
+| jq | Check GitHub Actions for latest |
+
+> **Note**: This README is auto-updated after each successful container build with actual version numbers. If you see placeholder text above, the README will be updated within minutes of the build completing.
 
 ## Additional Included Tools
 
-- **curl**, wget, unzip
+- curl, wget, unzip
 - git
 - Python 3 with pip
 - sed, awk (GNU AWK)
 - CA certificates & OpenSSL
 - make
-- bind-tools (DNS utilities)
+- bind-tools (dns utilities)
 
 ## Usage
 
@@ -59,63 +61,25 @@ docker run -it \
   techlotse/codestream-cloudcli:latest
 ```
 
-## Versioning Strategy
+## Versioning
 
-- **Semantic Versioning**: Images tagged with versions like `v0.3.0`
-- **Date-based Tags**: Images also tagged with build dates in `YYYYMMDD` format
+- **Semantic Versioning**: Images are tagged with semantic versions (v0.3.0, etc.)
+- **Date Tags**: Images are also tagged with build dates (YYYYMMDD format)
 - **Latest Tag**: Always points to the most recent stable build
-- **Build Frequency**: Weekly automated builds (Sundays at 6:00 AM UTC)
+- **Build Schedule**: Weekly builds on Sunday at 6:00 AM UTC
 
-## Build Automation
-
-### Weekly Build Schedule
+## Build and Push Schedule
 
 This image is automatically built and pushed to Docker Hub:
+
 - **Schedule**: Every Sunday at 6:00 AM UTC (7:00 AM CET)
 - **Trigger**: Automated weekly schedule via GitHub Actions
-- **Registry**: Docker Hub at `techlotse/codestream-cloudcli`
+- **Registry**: Docker Hub (techlotse/codestream-cloudcli)
 - **Provenance**: SBOM and provenance data included with each build
 
-### Documentation Updates
+## Documentation Updates
 
-- README is automatically updated after each successful container build
-- Tool versions are extracted from the running container
-- Documentation commits include `[skip ci]` to prevent triggering new builds
-- Separation of concerns: Docs updates ≠ Container builds
-
-## Building Locally
-
-### Build with default settings
-
-```bash
-docker build -t codestream-cloudcli:local .
-```
-
-### Build with custom tool versions
-
-```bash
-docker build \
-  --build-arg TERRAFORM_VER=1.5.0 \
-  --build-arg PACKER_VER=1.9.0 \
-  -t codestream-cloudcli:custom .
-```
-
-## Image Security
-
-- **Minimal Base**: Alpine Linux 3.19 (~5MB base image)
-- **Security-Focused**: Alpine is designed for container environments
-- **Reduced Attack Surface**: Only essential tools included
-- **No Root Requirement**: Run as non-root user when possible
-
-## Maintenance & Updates
-
-The container is automatically updated weekly with the latest versions of all included tools. The build process:
-
-1. Pulls latest tool versions from official repositories
-2. Builds the Docker image
-3. Pushes to Docker Hub with version tags
-4. Updates README with extracted version information
-5. Creates SBOM and provenance attestations
+The README is automatically updated after each successful container build with the latest tool versions. Documentation updates do not trigger new container builds, ensuring a clean separation of concerns.
 
 ## Architecture
 
@@ -124,10 +88,33 @@ The container is automatically updated weekly with the latest versions of all in
 - **Default Working Directory**: `/data`
 - **Default Shell**: `/bin/bash`
 
-## Contributing
+## Building Locally
 
-For updates, bug reports, or feature requests, please open an issue or pull request in the repository.
+```bash
+# Standard build
+docker build -t codestream-cloudcli:local .
 
-## License
+# Test the build
+docker run -it codestream-cloudcli:local
 
-Maintained by TechLotse ([info@techlotse.io](mailto:info@techlotse.io))
+# Inside container, verify tools
+aws --version
+terraform --version
+packer --version
+ansible --version
+az --version
+yq --version
+jq --version
+```
+
+## Description
+
+This repository contains the Dockerfile and automation scripts for building the CodeStream CloudCLI Docker image, used for managing cloud resources through various CLI tools. The container is optimized for use in automation pipelines, CI/CD systems, and infrastructure-as-code workflows.
+
+## Support & Maintenance
+
+Maintainer: TechLotse (info@techlotse.io)
+Repository: github.com/techlotse/codestream-cloudcli
+Registry: hub.docker.com/r/techlotse/codestream-cloudcli
+
+For issues or questions, please refer to the repository or contact the maintainer.
