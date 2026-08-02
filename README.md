@@ -9,8 +9,8 @@ A lightweight, security-focused Docker container with essential cloud and infras
 - **Image**: `techlotse/codestream-cloudcli`
 - **Latest Tag**: `latest` or `v<version>` or `<YYYYMMDD>`
 - **Base Image**: Alpine Linux 3.19 (lightweight & security-focused)
-- **Image Digest**: techlotse/codestream-cloudcli@sha256:5d605b9b112b8c0cc9bb084de5b319c8f22c6ad658fba5a6aecd75d131b86bb2
-- **Last Updated**: 2026-07-26T08:37:39Z
+- **Image Digest**: techlotse/codestream-cloudcli@sha256:e1271a783bcbec2bc5db7c6aee1837d3a7ee9d24e62ae5c7ba47ff696a8c25e7
+- **Last Updated**: 2026-08-02T08:34:50Z
 
 ## Installed Tools and Versions
 
