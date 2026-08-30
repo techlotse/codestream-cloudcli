@@ -9,8 +9,8 @@ A lightweight, security-focused Docker container with essential cloud and infras
 - **Image**: `techlotse/codestream-cloudcli`
 - **Latest Tag**: `latest` or `v<version>` or `<YYYYMMDD>`
 - **Base Image**: Alpine Linux 3.19 (lightweight & security-focused)
-- **Image Digest**: techlotse/codestream-cloudcli@sha256:f71c425a3993ae7bd3f6e68b9e0ec3a44e9a939f0639d4b76daf9090185d44fe
-- **Last Updated**: 2026-08-23T06:54:28Z
+- **Image Digest**: techlotse/codestream-cloudcli@sha256:012a0ea3e4c14ff8bc6c22587249d4b033e65e156e2d5435591745aab02c0771
+- **Last Updated**: 2026-08-30T11:44:33Z
 
 ## Installed Tools and Versions
 
@@ -18,7 +18,7 @@ A lightweight, security-focused Docker container with essential cloud and infras
 |------|---------|
 | AWS CLI | 2.15.14 |
 | Azure CLI | 2.89.1 |
-| Terraform | v1.15.9 |
+| Terraform | v1.16.0 |
 | Packer | Packer v1.16.0 |
 | Ansible | [core |
 | yq | version |
